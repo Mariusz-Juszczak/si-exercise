@@ -50,4 +50,13 @@ public class UserController {
             return new ResponseEntity<>("New user was created", HttpStatus.OK);
         }
     }
+
+    @PatchMapping("/users/{id}")
+    public void changeUserEmail(
+            @PathVariable("id") Optional<Long> id, @RequestParam("email") Optional<String> email) {
+                if (id.isPresent() && email.isPresent()) {
+                    usersRepo.findUserById(id.get()).get(0).setEmail(email.get());
+                }
+    }
+
 }

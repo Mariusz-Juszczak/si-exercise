@@ -5,9 +5,11 @@ import exercises.siiexercise.repository.LecturesRepo;
 import exercises.siiexercise.repository.ReservationsRepo;
 import exercises.siiexercise.repository.UsersRepo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import java.util.List;
-import java.util.Optional;
+
+import java.util.*;
 
 @RestController
 public class LectureController {
@@ -32,5 +34,20 @@ public class LectureController {
         } else {
             return lecturesRepo.findAll();
         }
+    }
+
+    @GetMapping("/lectures/popularityByTitle")
+    public ResponseEntity<Map<Integer, Lecture>> sortLecturesByTitlePopularity() {
+        List<Lecture> lecturesList;
+        lecturesList = lecturesRepo.findAll();
+
+        Map<Integer, Lecture> sortedLecturesMap = new TreeMap<>();
+        int count;
+
+        for (int i = 0; i < 9; i++) {
+            count = reservationsRepo.findReservationByLecture(lecturesList.get(i)).size();
+            sortedLecturesMap.put(count,lecturesList.get(i));
+        }
+        return new ResponseEntity<>(sortedLecturesMap, HttpStatus.OK);
     }
 }

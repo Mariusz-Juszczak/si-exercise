@@ -63,4 +63,19 @@ public class ReservationController {
             return reservationsRepo.findAll();
         }
     }
+
+    @GetMapping("users/{login}/reservations")
+    public List<Lecture> getUserReservations(
+            @PathVariable("login") Optional<String> login) {
+                    return usersRepo.getUserByLogin(login.get()).getLecturesList();
+    }
+
+    @DeleteMapping("users/{id1}/reservations/{id2}")
+    public void deleteReservation(
+            @PathVariable("id1") Optional<Long> id1, @PathVariable("id2") Optional<Long> id2) {
+        if (id1.isPresent() && id2.isPresent()) {
+            reservationsRepo.deleteById(id2.get());
+        }
+    }
+
 }
