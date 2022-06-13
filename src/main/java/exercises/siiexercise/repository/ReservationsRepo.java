@@ -18,5 +18,6 @@ public interface ReservationsRepo extends CrudRepository<Reservation, Long> {
 
     List<Reservation> findReservationByLecture(Lecture lecture);
 
+    List<Reservation> findReservationByLecture_Topic(String topic);
     Reservation save(Reservation reservation);
 }

@@ -37,17 +37,32 @@ public class LectureController {
     }
 
     @GetMapping("/lectures/popularityByTitle")
-    public ResponseEntity<Map<Integer, Lecture>> sortLecturesByTitlePopularity() {
+    public ResponseEntity<Map<String, Integer>> sortLecturesByTitlePopularity() {
         List<Lecture> lecturesList;
         lecturesList = lecturesRepo.findAll();
 
-        Map<Integer, Lecture> sortedLecturesMap = new TreeMap<>();
+        Map<String, Integer> sortedLecturesMap = new TreeMap<>();
         int count;
 
         for (int i = 0; i < 9; i++) {
             count = reservationsRepo.findReservationByLecture(lecturesList.get(i)).size();
-            sortedLecturesMap.put(count,lecturesList.get(i));
+            sortedLecturesMap.put(lecturesList.get(i).getTitle(), count);
         }
         return new ResponseEntity<>(sortedLecturesMap, HttpStatus.OK);
     }
+
+        @GetMapping("/lectures/popularityByTopic")
+        public ResponseEntity<Map<String, Integer>> sortLecturesByTopicPopularity() {
+            List<Lecture> lecturesList;
+            lecturesList = lecturesRepo.findAll();
+
+            Map<String, Integer> sortedLecturesMap = new TreeMap<>();
+            int count;
+
+            for (int i = 0; i < 9; i++) {
+                count = reservationsRepo.findReservationByLecture_Topic(lecturesList.get(i).getTopic()).size();
+                sortedLecturesMap.put(lecturesList.get(i).getTopic(), count);
+            }
+            return new ResponseEntity<>(sortedLecturesMap, HttpStatus.OK);
+        }
 }
