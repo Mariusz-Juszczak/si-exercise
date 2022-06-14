@@ -10,6 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -32,22 +36,44 @@ public class ReservationController {
     public ResponseEntity<String> addReservation(
             @PathVariable Optional<String> title, @RequestBody User user) {
 
-        if (title.isPresent() && (usersRepo.getUserByLogin(user.getLogin()) != null)) {
+        User tempUser = usersRepo.getUserByLogin(user.getLogin());
+        Lecture tempLecture = lecturesRepo.getLectureByTitle(title.get());
 
-             if ((reservationsRepo.findReservationByLecture(lecturesRepo.getLecturesByTitle(title.get())).size() >= 5)){
+        if (tempUser != null) {
+
+             if ((reservationsRepo.findReservationByLecture(tempLecture).size() >= 5)){
                 return new ResponseEntity<>("The reservation cannot be placed as there are no free seats left at this lecture.", HttpStatus.BAD_REQUEST);
 
-            } else if (usersRepo.getUserByLogin(user.getLogin()).getLecturesList().contains(lecturesRepo.getLecturesByTitle(title.get()))) {
-                return new ResponseEntity<>("The reservation already exist.", HttpStatus.BAD_REQUEST);
+             } else if (tempUser.getLecturesList().contains(tempLecture)) {
+                 return new ResponseEntity<>("The reservation already exist.", HttpStatus.BAD_REQUEST);
 
-            } else {
-                user = usersRepo.getUserByLogin(user.getLogin());
-                user.getLecturesList().add(lecturesRepo.getLecturesByTitle(title.get()));
-                Reservation reservation = new Reservation(user, lecturesRepo.getLecturesByTitle(title.get()));
-                reservationsRepo.save(reservation);
+             } else {
+                 int i = 0;
+                 while (i<5) {
+                 if (tempUser.getLecturesList().size() > i && tempUser.getLecturesList().get(i).getStartDateTime().isEqual(tempLecture.getStartDateTime())) {
+                     return new ResponseEntity<>("You have already another lecture scheduled at that time", HttpStatus.BAD_REQUEST);
+                 }
+                     i++;
+                 }
+
+                 tempUser.getLecturesList().add(tempLecture);
+                 Reservation reservation = new Reservation(tempUser, tempLecture);
+                 reservationsRepo.save(reservation);
+
+                 File file = new File("notifications.txt");
+                 LocalDateTime localDateTime = LocalDateTime.now();
+                 try {
+                    PrintWriter writer = new PrintWriter(file);
+                    writer.println("Post date: " + localDateTime);
+                    writer.println("To: " + user.getEmail());
+                    writer.println("Thank you for making a reservation for: " + tempLecture.getTitle() + " lecture at our conference!");
+                    writer.close();
+                 } catch (IOException e) {
+                    e.printStackTrace();
+                 }
             }
-
-        } else {
+        }
+        else {
             return new ResponseEntity<>("You have to log in with your login and email", HttpStatus.BAD_REQUEST);
 
         }
@@ -77,5 +103,4 @@ public class ReservationController {
             reservationsRepo.deleteById(id2.get());
         }
     }
-
 }

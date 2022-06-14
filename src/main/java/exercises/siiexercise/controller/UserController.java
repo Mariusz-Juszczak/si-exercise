@@ -1,17 +1,13 @@
 package exercises.siiexercise.controller;
 
-import exercises.siiexercise.model.Lecture;
 import exercises.siiexercise.model.User;
 import exercises.siiexercise.repository.LecturesRepo;
 import exercises.siiexercise.repository.ReservationsRepo;
 import exercises.siiexercise.repository.UsersRepo;
 import org.springframework.beans.factory.annotation.Autowired;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-
 import java.util.List;
 import java.util.Optional;
 
@@ -55,8 +51,9 @@ public class UserController {
     public void changeUserEmail(
             @PathVariable("id") Optional<Long> id, @RequestParam("email") Optional<String> email) {
                 if (id.isPresent() && email.isPresent()) {
-                    usersRepo.findUserById(id.get()).get(0).setEmail(email.get());
+                    User tempUser = usersRepo.findUserById(id.get()).get(0);
+                    tempUser.setEmail(email.get());
+                    usersRepo.save(tempUser);
                 }
     }
-
 }

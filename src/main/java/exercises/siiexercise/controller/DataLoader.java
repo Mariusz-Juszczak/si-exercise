@@ -1,7 +1,6 @@
 package exercises.siiexercise.controller;
 
 import exercises.siiexercise.model.Lecture;
-import exercises.siiexercise.model.User;
 import exercises.siiexercise.repository.LecturesRepo;
 import exercises.siiexercise.repository.UsersRepo;
 import org.springframework.beans.factory.annotation.Autowired;

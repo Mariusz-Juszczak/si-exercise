@@ -57,11 +57,11 @@ public class LectureController {
             lecturesList = lecturesRepo.findAll();
 
             Map<String, Integer> sortedLecturesMap = new TreeMap<>();
-            int count;
+            int counter;
 
             for (int i = 0; i < 9; i++) {
-                count = reservationsRepo.findReservationByLecture_Topic(lecturesList.get(i).getTopic()).size();
-                sortedLecturesMap.put(lecturesList.get(i).getTopic(), count);
+                counter = reservationsRepo.findReservationByLecture_Topic(lecturesList.get(i).getTopic()).size();
+                sortedLecturesMap.put(lecturesList.get(i).getTopic(), counter);
             }
             return new ResponseEntity<>(sortedLecturesMap, HttpStatus.OK);
         }

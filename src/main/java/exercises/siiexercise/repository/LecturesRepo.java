@@ -10,7 +10,6 @@ public interface LecturesRepo extends CrudRepository<Lecture, Long> {
 
     List<Lecture> findAll();
     List<Lecture> findLecturesByTitle(String title);
-    Lecture getLecturesByTitle(String title);
-
+    Lecture getLectureByTitle(String title);
     Lecture save(Lecture lecture);
 }
